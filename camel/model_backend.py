@@ -16,6 +16,8 @@ from typing import Any, Dict
 
 import openai
 import tiktoken
+import os
+import requests
 
 from camel.typing import ModelType
 from chatdev.statistics import prompt_cost
@@ -23,18 +25,78 @@ from chatdev.utils import log_visualize
 
 try:
     from openai.types.chat import ChatCompletion
-
     openai_new_api = True  # new openai api version
 except ImportError:
     openai_new_api = False  # old openai api version
 
-import os
-
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
+# OpenAI config
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', None)
 if 'BASE_URL' in os.environ:
     BASE_URL = os.environ['BASE_URL']
 else:
     BASE_URL = None
+
+
+
+# ...existing code...
+
+# ModelBackend precisa ser definido antes de OllamaModel
+
+class ModelBackend(ABC):
+    r"""Base class for different model backends.
+    May be OpenAI API, a local LLM, a stub for unit tests, etc."""
+
+    @abstractmethod
+    def run(self, *args, **kwargs):
+        r"""Runs the query to the backend model.
+
+        Raises:
+            RuntimeError: if the return value from OpenAI API
+            is not a dict that is expected.
+
+        Returns:
+            Dict[str, Any]: All backends must return a dict in OpenAI format.
+        """
+        pass
+
+# Novo tipo de modelo para Ollama
+class OllamaModel(ModelBackend):
+    """Backend para modelos rodando no Ollama local."""
+    def __init__(self, model_type: ModelType, model_config_dict: Dict) -> None:
+        super().__init__()
+        self.model_type = model_type
+        self.model_config_dict = model_config_dict
+
+    def run(self, *args, **kwargs):
+        messages = kwargs["messages"]
+        prompt = "\n".join([m["content"] for m in messages])
+        model_name = "mistral:latest"
+        try:
+            response = requests.post(
+                "http://localhost:11434/api/generate",
+                json={"model": model_name, "prompt": prompt, "stream": False},
+                timeout=60
+            )
+            data = response.json()
+            if "response" in data and data["response"]:
+                content = data["response"]
+                finish_reason = data.get("finish_reason", "stop")
+            else:
+                # Mensagem de erro amigável
+                content = f"[Ollama ERROR]: {data.get('error', str(data))}"
+                finish_reason = "error"
+        except Exception as e:
+            content = f"[Ollama ERROR]: {str(e)}"
+            finish_reason = "exception"
+        # Sempre retorna a estrutura esperada
+        return {
+            "id": "ollama-response",
+            "choices": [{
+                "message": {"content": content, "role": "assistant"},
+                "finish_reason": finish_reason
+            }],
+            "usage": {}
+        }
 
 
 class ModelBackend(ABC):
@@ -179,7 +241,10 @@ class ModelFactory:
     def create(model_type: ModelType, model_config_dict: Dict) -> ModelBackend:
         default_model_type = ModelType.GPT_3_5_TURBO
 
-        if model_type in {
+        # Adiciona suporte ao Ollama
+        if model_type == ModelType.OLLAMA_DEEPSEEK:
+            model_class = OllamaModel
+        elif model_type in {
             ModelType.GPT_3_5_TURBO,
             ModelType.GPT_3_5_TURBO_NEW,
             ModelType.GPT_4,
@@ -199,6 +264,5 @@ class ModelFactory:
         if model_type is None:
             model_type = default_model_type
 
-        # log_visualize("Model Type: {}".format(model_type))
         inst = model_class(model_type, model_config_dict)
         return inst

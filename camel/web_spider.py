@@ -9,15 +9,17 @@ import time
 self_api_key = os.environ.get('OPENAI_API_KEY')
 BASE_URL = os.environ.get('BASE_URL')
 
-if BASE_URL:
-    client = openai.OpenAI(
-        api_key=self_api_key,
-        base_url=BASE_URL,
-    )
-else:
-    client = openai.OpenAI(
-        api_key=self_api_key
-    )
+client = None
+if self_api_key:
+    if BASE_URL:
+        client = openai.OpenAI(
+            api_key=self_api_key,
+            base_url=BASE_URL,
+        )
+    else:
+        client = openai.OpenAI(
+            api_key=self_api_key
+        )
 
 def get_baidu_baike_content(keyword):
     # design api by the baidubaike

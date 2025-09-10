@@ -94,6 +94,10 @@ def num_tokens_from_messages(
         ModelType.STUB
     }:
         return count_tokens_openai_chat_models(messages, encoding)
+    elif model == ModelType.OLLAMA_DEEPSEEK:
+        # Aproximação: conta o número de palavras como "tokens"
+        prompt = " ".join([m["content"] for m in messages])
+        return len(prompt.split())
     else:
         raise NotImplementedError(
             f"`num_tokens_from_messages`` is not presently implemented "
@@ -124,6 +128,8 @@ def get_model_token_limit(model: ModelType) -> int:
         return 32768
     elif model == ModelType.GPT_4_TURBO:
         return 128000
+    elif model == ModelType.OLLAMA_DEEPSEEK:
+        return 8192  # valor genérico, ajuste conforme o modelo
     elif model == ModelType.STUB:
         return 4096
     elif model == ModelType.GPT_4O:
@@ -149,12 +155,15 @@ def openai_api_key_required(func: F) -> F:
             variables.
     """
 
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         from camel.agents.chat_agent import ChatAgent
+        from camel.typing import ModelType
         if not isinstance(self, ChatAgent):
             raise ValueError("Expected ChatAgent")
-        if self.model == ModelType.STUB:
+        # Permite execução para modelos não-OpenAI
+        if self.model in [ModelType.STUB, ModelType.OLLAMA_DEEPSEEK]:
             return func(self, *args, **kwargs)
         elif 'OPENAI_API_KEY' in os.environ:
             return func(self, *args, **kwargs)
