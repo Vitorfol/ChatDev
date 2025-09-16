@@ -65,8 +65,11 @@ class OpenAIModel(ModelBackend):
 
     def run(self, *args, **kwargs):
         string = "\n".join([message["content"] for message in kwargs["messages"]])
-        encoding = tiktoken.encoding_for_model(self.model_type.value)
-        num_prompt_tokens = len(encoding.encode(string))
+        try:
+            encoding = tiktoken.get_encoding("cl100k_base")
+            num_prompt_tokens = len(encoding.encode(string))
+        except Exception:
+            num_prompt_tokens = 0
         gap_between_send_receive = 15 * len(kwargs["messages"])
         num_prompt_tokens += gap_between_send_receive
 
@@ -84,9 +87,9 @@ class OpenAIModel(ModelBackend):
 
             num_max_token_map = {
                 "gpt-3.5-turbo": 4096,
-                "gpt-3.5-turbo-16k": 16384,
+                "gpt-5-mini": 16384,
                 "gpt-3.5-turbo-0613": 4096,
-                "gpt-3.5-turbo-16k-0613": 16384,
+                # "gpt-3.5-turbo-16k-0613": 16384,  # removido, não usado
                 "gpt-4": 8192,
                 "gpt-4-0613": 8192,
                 "gpt-4-32k": 32768,
@@ -96,7 +99,17 @@ class OpenAIModel(ModelBackend):
             }
             num_max_token = num_max_token_map[self.model_type.value]
             num_max_completion_tokens = num_max_token - num_prompt_tokens
-            self.model_config_dict['max_tokens'] = num_max_completion_tokens
+            if self.model_type.value == "gpt-5-mini":
+                self.model_config_dict['max_completion_tokens'] = num_max_completion_tokens
+                self.model_config_dict.pop('max_tokens', None)
+                # Forçar temperature=1 ou remover se existir
+                if 'temperature' in self.model_config_dict and self.model_config_dict['temperature'] != 1:
+                    self.model_config_dict['temperature'] = 1
+                # Remover logit_bias se existir
+                if 'logit_bias' in self.model_config_dict:
+                    self.model_config_dict.pop('logit_bias')
+            else:
+                self.model_config_dict['max_tokens'] = num_max_completion_tokens
 
             response = client.chat.completions.create(*args, **kwargs, model=self.model_type.value,
                                                       **self.model_config_dict)
@@ -117,9 +130,9 @@ class OpenAIModel(ModelBackend):
         else:
             num_max_token_map = {
                 "gpt-3.5-turbo": 4096,
-                "gpt-3.5-turbo-16k": 16384,
+                "gpt-5-mini": 16384,
                 "gpt-3.5-turbo-0613": 4096,
-                "gpt-3.5-turbo-16k-0613": 16384,
+                # "gpt-3.5-turbo-16k-0613": 16384,  # removido, não usado
                 "gpt-4": 8192,
                 "gpt-4-0613": 8192,
                 "gpt-4-32k": 32768,
@@ -129,7 +142,11 @@ class OpenAIModel(ModelBackend):
             }
             num_max_token = num_max_token_map[self.model_type.value]
             num_max_completion_tokens = num_max_token - num_prompt_tokens
-            self.model_config_dict['max_tokens'] = num_max_completion_tokens
+            if self.model_type.value == "gpt-5-mini":
+                self.model_config_dict['max_completion_tokens'] = num_max_completion_tokens
+                self.model_config_dict.pop('max_tokens', None)
+            else:
+                self.model_config_dict['max_tokens'] = num_max_completion_tokens
 
             response = openai.ChatCompletion.create(*args, **kwargs, model=self.model_type.value,
                                                     **self.model_config_dict)
@@ -177,10 +194,10 @@ class ModelFactory:
 
     @staticmethod
     def create(model_type: ModelType, model_config_dict: Dict) -> ModelBackend:
-        default_model_type = ModelType.GPT_3_5_TURBO
+        default_model_type = ModelType.GPT_5_MINI
 
         if model_type in {
-            ModelType.GPT_3_5_TURBO,
+            ModelType.GPT_5_MINI,
             ModelType.GPT_3_5_TURBO_NEW,
             ModelType.GPT_4,
             ModelType.GPT_4_32k,

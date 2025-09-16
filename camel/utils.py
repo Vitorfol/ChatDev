@@ -78,12 +78,12 @@ def num_tokens_from_messages(
     """
     try:
         value_for_tiktoken = model.value_for_tiktoken
-        encoding = tiktoken.encoding_for_model(value_for_tiktoken)
-    except KeyError:
+        encoding = tiktoken.get_encoding("cl100k_base")
+    except Exception:
         encoding = tiktoken.get_encoding("cl100k_base")
 
     if model in {
-        ModelType.GPT_3_5_TURBO,
+        ModelType.GPT_5_MINI,
         ModelType.GPT_3_5_TURBO_NEW,
         ModelType.GPT_4,
         ModelType.GPT_4_32k,
