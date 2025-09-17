@@ -1,0 +1,56 @@
+{
+  "next_ids": {
+    "student": 2,
+    "teacher": 2,
+    "class": 3
+  },
+  "students": [
+    {
+      "id": 1,
+      "name": "Vitor",
+      "age": 20,
+      "email": "vitor@uece",
+      "teachers": [],
+      "classes": []
+    }
+  ],
+  "teachers": [
+    {
+      "id": 1,
+      "name": "Vitor",
+      "subject": "vitor",
+      "email": "vitor@uece",
+      "students": [],
+      "classes": [
+        1,
+        2
+      ]
+    }
+  ],
+  "classes": [
+    {
+      "id": 1,
+      "name": "VITOR FONTENELE DE OLIVEIRA LINHARES",
+      "teacher_id": 1,
+      "students": [],
+      "schedule": [
+        {
+          "day": "Mon",
+          "time": "10:00-11:00"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "1",
+      "teacher_id": 1,
+      "students": [],
+      "schedule": [
+        {
+          "day": "Mon",
+          "time": "10:00-11:00"
+        }
+      ]
+    }
+  ]
+}

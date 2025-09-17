@@ -1,0 +1,80 @@
+'''
+This is the main HTML file for the Random Winner Wheel.
+It contains the structure: input fields to add names, a canvas for the wheel,
+controls (spin, clear, bulk add), theme selector, and placeholders for CSS/JS.
+'''
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Random Winner Wheel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-light">
+  <!--
+    This is the main HTML file for the Random Winner Wheel.
+    It contains the structure: input fields to add names, a canvas for the wheel,
+    controls (spin, clear, bulk add), theme selector, and placeholders for CSS/JS.
+  -->
+  <header>
+    <h1>Random Winner Wheel</h1>
+    <p>Enter participant names, choose a theme, and spin to pick a winner.</p>
+  </header>
+  <main>
+    <section class="controls">
+      <div class="add-single">
+        <input id="nameInput" type="text" placeholder="Enter a name and press Add" aria-label="Name input" />
+        <button id="addBtn">Add</button>
+        <button id="addRandomBtn" title="Add a few sample random names">Add Sample</button>
+      </div>
+      <div class="bulk-add">
+        <label for="bulkInput">Bulk add (comma, newline or semicolon separated):</label>
+        <textarea id="bulkInput" placeholder="Alice, Bob, Charlie"></textarea>
+        <div class="bulk-actions">
+          <button id="bulkAddBtn">Bulk Add</button>
+          <button id="clearBulkBtn">Clear Bulk</button>
+        </div>
+      </div>
+      <div class="list-actions">
+        <div class="theme-select">
+          <label for="themeSelect">Theme:</label>
+          <select id="themeSelect">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="neon">Neon</option>
+            <option value="pastel">Pastel</option>
+            <option value="retro">Retro</option>
+          </select>
+        </div>
+        <div class="wheel-controls">
+          <button id="spinBtn" class="primary">Spin</button>
+          <button id="clearNamesBtn">Clear Names</button>
+          <button id="exportBtn">Export CSV</button>
+          <input id="importFile" type="file" accept=".csv,text/csv" style="display:none">
+          <button id="importBtn">Import CSV</button>
+        </div>
+      </div>
+    </section>
+    <section class="wheel-area">
+      <div class="wheel-container">
+        <canvas id="wheelCanvas" width="600" height="600" aria-label="Spinning wheel"></canvas>
+        <div class="pointer" aria-hidden="true">▼</div>
+      </div>
+      <aside class="participants">
+        <h2>Participants (<span id="count">0</span>)</h2>
+        <ul id="nameList" aria-live="polite"></ul>
+      </aside>
+    </section>
+    <section class="result" id="result" aria-live="polite" hidden>
+      <h2>Winner</h2>
+      <div id="winnerName" class="winnerName"></div>
+      <button id="rerollBtn">Spin Again</button>
+    </section>
+  </main>
+  <footer>
+    <small>Built with HTML, CSS, and JavaScript. Themes change both UI and wheel colors.</small>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

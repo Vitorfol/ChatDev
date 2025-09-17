@@ -1,0 +1,54 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>School Management - Shell</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <header class="shell-header">
+    <h1>School Management - Microfrontend Shell</h1>
+    <p class="subtitle">Register students & teachers, create relationships, assign classes & schedules.</p>
+  </header>
+  <nav class="tabs">
+    <button data-target="students" class="tab active">Students</button>
+    <button data-target="teachers" class="tab">Teachers</button>
+    <button data-target="classes" class="tab">Classes</button>
+    <button id="clean-btn" class="tab" style="margin-left:16px;background:#f87171;color:#fff;">Clean</button>
+  </nav>
+  <main class="shell-main">
+    <div id="frame-container" class="frame-container">
+      <iframe id="students" src="/micro/students" class="microframe"></iframe>
+      <iframe id="teachers" src="/micro/teachers" class="microframe hidden"></iframe>
+      <iframe id="classes" src="/micro/classes" class="microframe hidden"></iframe>
+    </div>
+  </main>
+  <footer class="footer">
+    <small>Simple microfrontend demo · Built with Python + Flask · Frontend: HTML/CSS</small>
+  </footer>
+  <script>
+    // Simple tab switching without reloading iframes
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (btn.id === 'clean-btn') {
+          await fetch('/api/clean_all', {method: 'POST'});
+          window.location.reload();
+          return;
+        }
+        document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-target');
+        document.querySelectorAll('.microframe').forEach(f => {
+          if (f.id === target) {
+            f.classList.remove('hidden');
+          } else {
+            f.classList.add('hidden');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

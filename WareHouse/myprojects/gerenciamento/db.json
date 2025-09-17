@@ -1,0 +1,10 @@
+{
+  "next_ids": {
+    "student": 1,
+    "teacher": 1,
+    "class": 1
+  },
+  "students": [],
+  "teachers": [],
+  "classes": []
+}

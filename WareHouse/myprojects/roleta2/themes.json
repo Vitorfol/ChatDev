@@ -1,0 +1,45 @@
+'''
+DOCSTRING:
+List of themes available for the wheel.
+Each theme contains:
+- id: machine id
+- name: display name
+- bg: page background color
+- text: primary text color
+- accent: accent color used for pointer/button
+- colors: array of segment colors (will be cycled for segments)
+'''
+[
+  {
+    "id": "classic",
+    "name": "Classic",
+    "bg": "#ffffff",
+    "text": "#222222",
+    "accent": "#007bff",
+    "colors": ["#ffb3b3", "#ffd9b3", "#fff3b3", "#d9ffb3", "#b3ffd9", "#b3e6ff", "#c7b3ff", "#ffb3f2"]
+  },
+  {
+    "id": "dark",
+    "name": "Dark",
+    "bg": "#121212",
+    "text": "#f5f5f5",
+    "accent": "#ff6b6b",
+    "colors": ["#2e2e34", "#3a3a44", "#4a4a56", "#5a5a68", "#6a6a78", "#7a7a88"]
+  },
+  {
+    "id": "pastel",
+    "name": "Pastel",
+    "bg": "#f7f7ff",
+    "text": "#333333",
+    "accent": "#ff8c94",
+    "colors": ["#ffd1dc", "#fce1b4", "#e8ffd1", "#d1fff0", "#d1e7ff", "#e6d1ff"]
+  },
+  {
+    "id": "neon",
+    "name": "Neon",
+    "bg": "#0f0f13",
+    "text": "#eaff00",
+    "accent": "#00fff5",
+    "colors": ["#ff00ff", "#ff8c00", "#00ff00", "#00ffff", "#8c00ff", "#ff0066"]
+  }
+]

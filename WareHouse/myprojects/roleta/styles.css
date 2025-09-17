@@ -1,0 +1,137 @@
+'''
+Stylesheet for the Random Winner Wheel.
+Defines layout, themes, wheel container sizing, animations, and toast styles.
+'''
+/*
+ Stylesheet for the Random Winner Wheel.
+ Defines layout, themes, wheel container sizing, animations, and toast styles.
+*/
+/* Reset & base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html,body { height: 100%; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: var(--bg); color: var(--fg); }
+:root {
+  --bg: #f7f8fb;
+  --fg: #222;
+  --muted: #666;
+  --accent: #2b8cff;
+  --card: #ffffff;
+  --primary-btn-bg: var(--accent);
+  --primary-btn-fg: #fff;
+  --shadow: rgba(15,15,15,0.08);
+}
+/* Themes */
+body.theme-light {
+  --bg: #f7f8fb;
+  --fg: #222;
+  --muted: #5b6170;
+  --accent: #2b8cff;
+  --card: #fff;
+  --wheel-seq: 0;
+}
+body.theme-dark {
+  --bg: #0f1724;
+  --fg: #e6eef8;
+  --muted: #a9b1c2;
+  --accent: #7c5cff;
+  --card: #0b1220;
+}
+body.theme-neon {
+  --bg: #0a0a0f;
+  --fg: #e9f9ff;
+  --muted: #a6f3ff;
+  --accent: #39ff14;
+  --card: #09101a;
+}
+body.theme-pastel {
+  --bg: #fffaf6;
+  --fg: #3c3a3a;
+  --muted: #8d8a8a;
+  --accent: #ff7aa2;
+  --card: #fff;
+}
+body.theme-retro {
+  --bg: #fff6e7;
+  --fg: #402b2b;
+  --muted: #856e6e;
+  --accent: #ffb86b;
+  --card: #fff0e6;
+}
+/* Layout */
+header { padding: 18px 24px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+header h1 { font-size: 1.5rem; margin-bottom: 6px; }
+main { padding: 18px; max-width: 1100px; margin: 0 auto; }
+.controls { display: grid; gap: 12px; margin-bottom: 18px; }
+.add-single { display:flex; gap:8px; }
+.add-single input[type="text"] { flex:1; padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); background:var(--card); color:var(--fg); }
+.add-single button { padding:10px 12px; border-radius:8px; border: none; cursor:pointer; background: var(--primary-btn-bg); color: var(--primary-btn-fg); }
+.add-single button#addRandomBtn { background: transparent; border: 1px solid rgba(0,0,0,0.06); color: var(--fg); }
+.bulk-add textarea { width:100%; min-height:64px; margin-top:6px; padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:var(--card); color:var(--fg); }
+.bulk-actions { display:flex; gap:8px; margin-top:8px; }
+.list-actions { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+.theme-select select { padding:8px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); }
+.wheel-area { display:flex; gap:18px; align-items:start; flex-wrap:wrap; }
+.wheel-container { position: relative; width: 600px; height: 600px; max-width: 90vw; max-height: 90vw; display:flex; align-items:center; justify-content:center; background: transparent; }
+.pointer {
+  /* Centered triangular pointer positioned above the wheel.
+     This ensures the visual pointer aligns with the wheel math (top-center).
+     Hides the fallback glyph in the HTML and draws a sharp triangle instead. */
+  position: absolute;
+  top: 8px;               /* vertical offset from top of wheel container */
+  left: 50%;              /* center horizontally */
+  transform: translateX(-50%); /* center on the X axis */
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 18px solid var(--accent);
+  z-index: 10;            /* ensure it's above the canvas */
+  pointer-events: none;
+  /* hide textual glyph fallback content (the ▼ in HTML) */
+  font-size: 0;
+  line-height: 0;
+  text-indent: -9999px;
+}
+/* Participants panel and wheel styles */
+.participants { width: 320px; max-width: 40vw; background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:12px; border-radius:10px; box-shadow: 0 6px 18px var(--shadow); }
+.participants h2 { margin-bottom:8px; font-size:1.05rem; }
+#nameList { list-style:none; max-height:420px; overflow:auto; display:block; }
+#nameList li { padding:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; background: var(--card); border:1px solid rgba(0,0,0,0.04); }
+#nameList li button { background: transparent; border: none; color: var(--muted); cursor:pointer; }
+.result { margin-top:18px; padding:12px; border-radius:8px; background: var(--card); text-align:center; box-shadow: 0 6px 18px var(--shadow); }
+.result .winnerName { font-size:1.4rem; font-weight:700; margin:8px 0; color: var(--accent); }
+/* Buttons */
+button { cursor:pointer; padding:8px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background: transparent; color:var(--fg); }
+button.primary { background: var(--primary-btn-bg); color: var(--primary-btn-fg); border: none; }
+/* Responsive */
+@media (max-width: 900px) {
+  .wheel-area { flex-direction:column; align-items:center; }
+  .participants { width: 100%; max-width: 100%; }
+}
+/* Wheel canvas scaling helper */
+#wheelCanvas { border-radius:50%; box-shadow: 0 12px 26px rgba(0,0,0,0.12); background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.02), transparent); }
+/* Toast / temporary message styles (used by showMessage) */
+.tmp-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 18px;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  z-index: 9999;
+  transition: opacity 0.25s, transform 0.25s;
+  opacity: 1;
+  pointer-events: none;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+}
+.tmp-toast.success { background: rgba(56, 198, 123, 0.95); }
+.tmp-toast.warn    { background: rgba(255, 159, 67, 0.95); color: #2b1500; }
+.tmp-toast.info    { background: rgba(12, 74, 255, 0.95); }
+/* Winner highlight for participants list */
+#nameList li.winner {
+  outline: 3px solid rgba(255,215,0,0.15);
+  box-shadow: 0 6px 18px rgba(255,215,0,0.06);
+  transform: scale(1.01);
+}

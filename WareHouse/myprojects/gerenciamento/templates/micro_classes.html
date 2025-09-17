@@ -1,0 +1,46 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Classes · Microfrontend</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="micro-body classes-bg">
+  <section class="micro-header">
+    <h2>Classes</h2>
+    <p class="micro-sub">Create classes and schedules</p>
+  </section>
+  <section class="panel">
+    <h3>Create Class</h3>
+    <form id="class-form" class="form">
+      <label>Class Name <input name="name" required /></label>
+      <label>Schedule (comma-separated, e.g. Mon 10:00-11:00;Tue 09:00-10:00)
+        <input name="schedule" placeholder="Mon 10:00-11:00, Tue 09:00-10:00" />
+      </label>
+      <div class="form-actions">
+        <button type="submit">Create Class</button>
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <h3>Assign Teacher to Class</h3>
+    <form id="assign-teacher-class-form" class="form">
+      <label>Teacher
+        <select id="teacher-select-class"></select>
+      </label>
+      <label>Class
+        <select id="class-select-teach"></select>
+      </label>
+      <div class="form-actions">
+        <button type="submit">Assign Teacher to Class</button>
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <h3>Classes List</h3>
+    <div id="classes-list" class="list"></div>
+  </section>
+  <script src="{{ url_for('static', filename='js/micro_classes.js') }}"></script>
+</body>
+</html>

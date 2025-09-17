@@ -1,0 +1,56 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Students · Microfrontend</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="micro-body students-bg">
+  <section class="micro-header">
+    <h2>Students</h2>
+    <p class="micro-sub">Register and manage students</p>
+  </section>
+  <section class="panel">
+    <h3>Register Student</h3>
+    <form id="student-form" class="form">
+      <label>Name <input name="name" required /></label>
+      <label>Age <input name="age" type="number" min="1" /></label>
+      <label>Email <input name="email" type="email" /></label>
+      <div class="form-actions">
+        <button type="submit">Register Student</button>
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <h3>Assign Relationships</h3>
+    <form id="assign-teacher-form" class="form">
+      <label>Student
+        <select id="student-select-assign"></select>
+      </label>
+      <label>Teacher
+        <select id="teacher-select-assign"></select>
+      </label>
+      <div class="form-actions">
+        <button type="submit">Assign Teacher to Student</button>
+      </div>
+    </form>
+    <form id="assign-class-form" class="form">
+      <label>Student
+        <select id="student-select-class"></select>
+      </label>
+      <label>Class
+        <select id="class-select-assign"></select>
+      </label>
+      <div class="form-actions">
+        <button type="submit">Assign Student to Class</button>
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <h3>Students List</h3>
+    <div id="students-list" class="list"></div>
+  </section>
+  <script src="{{ url_for('static', filename='js/micro_students.js') }}"></script>
+</body>
+</html>

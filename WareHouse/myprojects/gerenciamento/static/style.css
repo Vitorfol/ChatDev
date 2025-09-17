@@ -1,0 +1,163 @@
+
+/* Reset-ish */
+* {
+  box-sizing: border-box;
+  font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #f7f9fb;
+  color: #1f2937;
+  padding: 18px;
+}
+/* Shell header */
+.shell-header {
+  padding: 12px 18px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.06);
+  margin-bottom: 12px;
+}
+.shell-header h1 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+.subtitle {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Fundo azul para Students */
+.students-bg {
+  background: #0074D9 !important;
+}
+/* Fundo vermelho para Teachers */
+.teachers-bg {
+  background: #FF4136 !important;
+}
+/* Fundo branco para Classes */
+.classes-bg {
+  background: #fff !important;
+}
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tab {
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #e6e9ef;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #374151;
+}
+.tab.active {
+  background: #0ea5a4;
+  color: #ffffff;
+  border-color: #0ea5a4;
+}
+/* Frame container */
+.frame-container {
+  background: transparent;
+  min-height: 560px;
+}
+/* iframe microfrontends */
+.microframe {
+  width: 100%;
+  height: 620px;
+  border: none;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(11,20,35,0.06);
+  padding: 0;
+}
+.hidden {
+  display: none;
+}
+/* Microfrontends layout */
+.micro-body {
+  padding: 18px;
+  background: #ffffff;
+  height: 100%;
+  overflow: auto;
+  border-radius: 8px;
+}
+/* Panels */
+.panel {
+  background: #ffffff;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+}
+.micro-header {
+  margin-bottom: 12px;
+}
+.micro-header h2 {
+  margin-bottom: 6px;
+}
+.micro-sub {
+  color: #6b7280;
+  font-size: 13px;
+}
+/* Forms */
+.form {
+  display: grid;
+  gap: 8px;
+}
+.form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: #374151;
+}
+.form input,
+.form select {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid #e6e9ef;
+  border-radius: 6px;
+  background: #fff;
+}
+/* Buttons */
+.form-actions {
+  margin-top: 8px;
+}
+button {
+  padding: 8px 12px;
+  border: none;
+  background: #0ea5a4;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+/* Lists */
+.list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+.card {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #e6e9ef;
+  font-size: 14px;
+}
+.card small {
+  color: #6b7280;
+}
+/* Footer */
+.footer {
+  margin-top: 12px;
+  color: #6b7280;
+  font-size: 12px;
+  text-align: center;
+}

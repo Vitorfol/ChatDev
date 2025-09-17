@@ -179,8 +179,8 @@ class ChatChain:
         filepath = os.path.dirname(__file__)
         # root = "/".join(filepath.split("/")[:-1])
         root = os.path.dirname(filepath)
-        # directory = root + "/WareHouse/"
-        directory = os.path.join(root, "WareHouse")
+        # directory = root + "/warehouse/myprojects/"
+        directory = os.path.join(root, "warehouse", "myprojects")
         log_filepath = os.path.join(directory,
                                     "{}.log".format("_".join([self.project_name, self.org_name, start_time])))
         return start_time, log_filepath
@@ -193,15 +193,15 @@ class ChatChain:
         """
         filepath = os.path.dirname(__file__)
         root = os.path.dirname(filepath)
-        directory = os.path.join(root, "WareHouse")
+        directory = os.path.join(root, "warehouse", "myprojects")
 
         if self.chat_env.config.clear_structure:
             for filename in os.listdir(directory):
                 file_path = os.path.join(directory, filename)
-                # logs with error trials are left in WareHouse/
+                # logs with error trials are left em warehouse/myprojects/
                 if os.path.isfile(file_path) and not filename.endswith(".py") and not filename.endswith(".log"):
                     os.remove(file_path)
-                    print("{} Removed.".format(file_path))
+                    print(f"{file_path} Removed.")
 
         software_path = os.path.join(directory, "_".join([self.project_name, self.org_name, self.start_time]))
         self.chat_env.set_directory(software_path)
@@ -318,8 +318,10 @@ class ChatChain:
         logging.shutdown()
         time.sleep(1)
 
+        filepath = os.path.dirname(__file__)
+        root = os.path.dirname(filepath)
         shutil.move(self.log_filepath,
-                    os.path.join(root + "/WareHouse", "_".join([self.project_name, self.org_name, self.start_time]),
+                    os.path.join(root, "warehouse", "myprojects", "_".join([self.project_name, self.org_name, self.start_time]),
                                  os.path.basename(self.log_filepath)))
 
     # @staticmethod

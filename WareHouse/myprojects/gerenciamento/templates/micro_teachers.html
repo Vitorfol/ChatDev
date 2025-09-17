@@ -1,0 +1,31 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Teachers · Microfrontend</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="micro-body teachers-bg">
+  <section class="micro-header">
+    <h2>Teachers</h2>
+    <p class="micro-sub">Register and manage teachers</p>
+  </section>
+  <section class="panel">
+    <h3>Register Teacher</h3>
+    <form id="teacher-form" class="form">
+      <label>Name <input name="name" required /></label>
+      <label>Subject <input name="subject" /></label>
+      <label>Email <input name="email" type="email" /></label>
+      <div class="form-actions">
+        <button type="submit">Register Teacher</button>
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <h3>Teachers List</h3>
+    <div id="teachers-list" class="list"></div>
+  </section>
+  <script src="{{ url_for('static', filename='js/micro_teachers.js') }}"></script>
+</body>
+</html>
