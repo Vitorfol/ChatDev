@@ -417,7 +417,7 @@ class CodeComplete(Phase):
                                "unimplemented_file": ""})
         unimplemented_file = ""
         for filename in self.phase_env['pyfiles']:
-            code_content = open(os.path.join(chat_env.env_dict['directory'], filename)).read()
+            code_content = open(os.path.join(chat_env.env_dict['directory'], filename), encoding="utf-8").read()
             lines = [line.strip() for line in code_content.split("\n") if line.strip() == "pass"]
             if len(lines) > 0 and self.phase_env['num_tried'][filename] < self.phase_env['max_num_implement']:
                 unimplemented_file = filename
