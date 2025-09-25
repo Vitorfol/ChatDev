@@ -102,14 +102,13 @@ class OpenAIModel(ModelBackend):
             if self.model_type.value == "gpt-5-mini":
                 self.model_config_dict['max_completion_tokens'] = num_max_completion_tokens
                 self.model_config_dict.pop('max_tokens', None)
-                # Forçar temperature=1 ou remover se existir
                 if 'temperature' in self.model_config_dict and self.model_config_dict['temperature'] != 1:
                     self.model_config_dict['temperature'] = 1
-                # Remover logit_bias se existir
                 if 'logit_bias' in self.model_config_dict:
                     self.model_config_dict.pop('logit_bias')
             else:
                 self.model_config_dict['max_tokens'] = num_max_completion_tokens
+                self.model_config_dict.pop('max_completion_tokens', None)
 
             response = client.chat.completions.create(*args, **kwargs, model=self.model_type.value,
                                                       **self.model_config_dict)

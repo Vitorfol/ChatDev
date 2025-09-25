@@ -1,0 +1,9 @@
+'''
+List of Python packages required to run the project.
+'''
+fastapi==0.95.0
+uvicorn[standard]==0.22.0
+SQLAlchemy==1.4.48
+pydantic==1.10.11
+streamlit==1.26.0
+requests==2.31.0

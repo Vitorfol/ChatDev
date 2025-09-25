@@ -1,0 +1,8 @@
+'''
+List of required Python packages.
+'''
+fastapi
+uvicorn
+SQLAlchemy
+pydantic
+requests

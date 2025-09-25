@@ -1,0 +1,33 @@
+Task:
+[Develop an academic management system in Python that process the following 6 natural-language commands sequentially and incrementally in one session (preserve state, semantics, and code across steps like domain-driven design with living ontologiesdo not regenerate everything from scratch each time; use zero-downtime migrations to evolve the running system): 1. Create a Student entity with attributes: id (int, PK). 2. Add an email field (string) to the Student entity. 3. Create a Course entity with attributes: id (int, PK), level (string). 4. Create an enrollment relationship between Student and Course, and expose CRUD endpoints for managing enrollments. 5. Create a Teacher entity with attributes: id (int, PK). 6. Create a teaching relationship between Teacher and Course, and expose CRUD endpoints for managing teachings. Implementation requirements: - Use Python 3.11, FastAPI for CRUD endpoints, Pydantic models, SQLite persistence, and a minimal Streamlit UI for record inspection (focus on backend; keep UI simple). - Ensure incremental evolution: After each command, apply in-process or script-based migrations (e.g., SQLAlchemy/Alembic) without restarting the server. - Follow domain-driven design: Separate entities, repositories, services; preserve semantic vocabulary (e.g., identifiers/docstrings) across changes. - Add a small automated smoke test after the final step to verify CRUD for all entities/relationships (pass/fail).]
+
+Config:
+ChatEnvConfig.with_memory: False
+ChatEnvConfig.clear_structure: True
+ChatEnvConfig.git_management: False
+ChatEnvConfig.gui_design: True
+ChatEnvConfig.incremental_develop: False
+ChatEnvConfig.background_prompt: ChatDev is a software company powered by multiple intelligent agents, such as chief executive officer, chief human resources officer, chief product officer, chief technology officer, etc, with a multi-agent organizational structure and the mission of 'changing the digital world through programming'.
+
+
+Roster:
+Chief Executive Officer, Counselor, Chief Human Resource Officer, Chief Product Officer, Chief Technology Officer, Programmer, Code Reviewer, Software Test Engineer, Chief Creative Officer
+
+Modality:
+application
+
+Ideas:
+
+
+Language:
+ Python
+
+Code_Version:
+8.0
+
+Proposed_images:
+0
+
+Incorporated_images:
+0
+

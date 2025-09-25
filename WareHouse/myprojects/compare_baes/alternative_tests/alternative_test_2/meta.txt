@@ -1,0 +1,33 @@
+Task:
+[Develop an academic management system in Python that manages Student, Course, and Teacher entities with the following requirements, evolving incrementally in concept (preserve semantics and state where possible, like domain-driven design with living ontologies): - Student entity: id (int, PK), name (string), email (string). - Course entity: id (int, PK), title (string), level (string). - Teacher entity: id (int, PK), name (string), department (string). - Relationships: Many-to-many enrollment (Student enrolls in Course), many-to-many teaching (Teacher teaches Course). Use explicit tables if needed. - Provide CRUD endpoints for all entities and relationships. - Use Python 3.11, FastAPI backend, Pydantic models, SQLite persistence, minimal Streamlit UI for inspection (focus on backend). - Include zero-downtime migrations or scripts. - Follow domain-driven design: Separate entities, repositories, services.]
+
+Config:
+ChatEnvConfig.with_memory: False
+ChatEnvConfig.clear_structure: True
+ChatEnvConfig.git_management: False
+ChatEnvConfig.gui_design: True
+ChatEnvConfig.incremental_develop: False
+ChatEnvConfig.background_prompt: ChatDev is a software company powered by multiple intelligent agents, such as chief executive officer, chief human resources officer, chief product officer, chief technology officer, etc, with a multi-agent organizational structure and the mission of 'changing the digital world through programming'.
+
+
+Roster:
+Chief Executive Officer, Counselor, Chief Human Resource Officer, Chief Product Officer, Chief Technology Officer, Programmer, Code Reviewer, Software Test Engineer, Chief Creative Officer
+
+Modality:
+application
+
+Ideas:
+
+
+Language:
+ Python
+
+Code_Version:
+4.0
+
+Proposed_images:
+0
+
+Incorporated_images:
+0
+

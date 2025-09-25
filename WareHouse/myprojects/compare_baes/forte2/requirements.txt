@@ -1,0 +1,9 @@
+'''
+Python package requirements for the Academic Management System.
+'''
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+streamlit
+requests

@@ -1,0 +1,1 @@
+[Develop a Python-based system using FastAPI with CRUD endpoints for Student, Course, and Teacher entities. Add an email field to Student and a level attribute to Course. Implement relationships between Student and Course, and between Teacher and Course. Use SQLite for persistence.]

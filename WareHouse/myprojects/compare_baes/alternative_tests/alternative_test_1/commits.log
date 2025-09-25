@@ -1,0 +1,9 @@
+'''
+2025-09-25T00:00:00Z - commit 001 - Create Student entity (id, name). Files: migrations/001_create_student.sql, models.py (Student), routers/students.py, schemas.py. 
+2025-09-25T00:01:00Z - commit 002 - Add email field to Student. Files: migrations/002_add_student_email.sql, models.py (Student.email), schemas.py (StudentBase updated)
+2025-09-25T00:02:00Z - commit 003 - Create Course entity (id, title, level). Files: migrations/003_create_course.sql, models.py (Course), routers/courses.py, schemas.py
+2025-09-25T00:03:00Z - commit 004 - Create Enrollment relationship and CRUD endpoints. Files: migrations/004_create_enrollment.sql, models.py (Enrollment), routers/enrollments.py, schemas.py
+2025-09-25T00:04:00Z - commit 005 - Create Teacher entity (id, name, department). Files: migrations/005_create_teacher.sql, models.py (Teacher), routers/teachers.py, schemas.py
+2025-09-25T00:05:00Z - commit 006 - Create Teacher-Course relationship and CRUD endpoints. Files: migrations/006_create_course_teacher.sql, models.py (CourseTeacher), routers/course_teachers.py, schemas.py
+2025-09-25T00:06:00Z - commit 007 - Fix migration SQL to use valid SQL comments and harden migrate.py to sanitize accidental triple-quoted blocks. Files: migrations/*.sql, migrate.py
+'''
