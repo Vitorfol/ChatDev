@@ -1,0 +1,9 @@
+'''
+Dependencies required to run the application and GUI.
+'''
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+requests
+tk; platform_system=="Windows" or platform_system=="Darwin" or platform_system=="Linux"
