@@ -240,11 +240,21 @@ class ChatAgent(BaseAgent):
             if openai_new_api:
                 if not isinstance(response, ChatCompletion):
                     raise RuntimeError("OpenAI returned unexpected struct")
-                output_messages = [
-                    ChatMessage(role_name=self.role_name, role_type=self.role_type,
-                                meta_dict=dict(), **dict(choice.message))
-                    for choice in response.choices
-                ]
+                
+                # Filter only expected fields to avoid unexpected keyword arguments
+                output_messages = []
+                for choice in response.choices:
+                    message_dict = dict(choice.message)
+                    # Keep only fields that ChatMessage expects
+                    filtered_dict = {
+                        k: v for k, v in message_dict.items()
+                        if k in ['role', 'content', 'refusal', 'audio', 'function_call', 'tool_calls']
+                    }
+                    output_messages.append(
+                        ChatMessage(role_name=self.role_name, role_type=self.role_type,
+                                    meta_dict=dict(), **filtered_dict)
+                    )
+                
                 info = self.get_info(
                     response.id,
                     response.usage,
@@ -254,11 +264,21 @@ class ChatAgent(BaseAgent):
             else:
                 if not isinstance(response, dict):
                     raise RuntimeError("OpenAI returned unexpected struct")
-                output_messages = [
-                    ChatMessage(role_name=self.role_name, role_type=self.role_type,
-                                meta_dict=dict(), **dict(choice["message"]))
-                    for choice in response["choices"]
-                ]
+                
+                # Filter only expected fields to avoid unexpected keyword arguments
+                output_messages = []
+                for choice in response["choices"]:
+                    message_dict = dict(choice["message"])
+                    # Keep only fields that ChatMessage expects
+                    filtered_dict = {
+                        k: v for k, v in message_dict.items()
+                        if k in ['role', 'content', 'refusal', 'audio', 'function_call', 'tool_calls']
+                    }
+                    output_messages.append(
+                        ChatMessage(role_name=self.role_name, role_type=self.role_type,
+                                    meta_dict=dict(), **filtered_dict)
+                    )
+                
                 info = self.get_info(
                     response["id"],
                     response["usage"],

@@ -78,8 +78,8 @@ parser.add_argument('--task', type=str, default="Develop a basic Gomoku game.",
                     help="Prompt of software")
 parser.add_argument('--name', type=str, default="Gomoku",
                     help="Name of software, your software will be generated in WareHouse/name_org_timestamp")
-parser.add_argument('--model', type=str, default="GPT_3_5_TURBO",
-                    help="GPT Model, choose from {'GPT_3_5_TURBO', 'GPT_4', 'GPT_4_TURBO', 'GPT_4O', 'GPT_4O_MINI'}")
+parser.add_argument('--model', type=str, default="GPT_5",
+                    help="GPT Model, choose from {'GPT_3_5_TURBO', 'GPT_4', 'GPT_4_TURBO', 'GPT_4O', 'GPT_4O_MINI', 'GPT_5', 'GPT_5_MINI', 'GPT_5_TURBO'}")
 parser.add_argument('--path', type=str, default="",
                     help="Your file directory, ChatDev will build upon your software in the Incremental mode")
 args = parser.parse_args()
@@ -90,16 +90,49 @@ args = parser.parse_args()
 #          Init ChatChain
 # ----------------------------------------
 config_path, config_phase_path, config_role_path = get_config(args.config)
-args2type = {'GPT_3_5_TURBO': ModelType.GPT_3_5_TURBO,
-             'GPT_4': ModelType.GPT_4,
-            #  'GPT_4_32K': ModelType.GPT_4_32k,
-             'GPT_4_TURBO': ModelType.GPT_4_TURBO,
-            #  'GPT_4_TURBO_V': ModelType.GPT_4_TURBO_V
-            'GPT_4O': ModelType.GPT_4O,
-            'GPT_4O_MINI': ModelType.GPT_4O_MINI,
-             }
+args2type = {
+    'GPT_3_5_TURBO': ModelType.GPT_3_5_TURBO,
+    'GPT_4': ModelType.GPT_4,
+    # 'GPT_4_32K': ModelType.GPT_4_32k,
+    'GPT_4_TURBO': ModelType.GPT_4_TURBO,
+    # 'GPT_4_TURBO_V': ModelType.GPT_4_TURBO_V
+    'GPT_4O': ModelType.GPT_4O,
+    'GPT_4O_MINI': ModelType.GPT_4O_MINI,
+    'GPT_5': ModelType.GPT_5,
+    'GPT_5_MINI': ModelType.GPT_5_MINI,
+    'GPT_5_TURBO': ModelType.GPT_5_TURBO,
+}
+
 if openai_new_api:
+    # prefer the new 3.5 turbo model name when available
     args2type['GPT_3_5_TURBO'] = ModelType.GPT_3_5_TURBO_NEW
+
+# Build a case-insensitive alias map so users can pass names like
+# 'gpt-4o-mini' or 'gpt_4o_mini' or uppercase constants 'GPT_4O_MINI'.
+alias_map = {}
+for key, val in args2type.items():
+    alias_map[key.lower()] = val
+    alias_map[key.replace('_', '-').lower()] = val
+    # also map the real model string values (e.g. 'gpt-4o-mini')
+    try:
+        alias_map[val.value.lower()] = val
+    except Exception:
+        pass
+
+# normalize user input and resolve to a ModelType
+user_model_raw = args.model.strip()
+user_key = user_model_raw.lower()
+model_type_selected = None
+if user_model_raw in args2type:
+    model_type_selected = args2type[user_model_raw]
+elif user_key in alias_map:
+    model_type_selected = alias_map[user_key]
+else:
+    allowed = sorted(list(alias_map.keys()))
+    raise ValueError(
+        f"Unknown model '{args.model}'. Allowed examples: {', '.join(['gpt-4o-mini','GPT_4O_MINI','gpt-5','GPT_3_5_TURBO'])}.\n"
+        f"You can use any of the following canonical names: {', '.join(allowed[:20])}..."
+    )
 
 chat_chain = ChatChain(config_path=config_path,
                        config_phase_path=config_phase_path,
@@ -107,7 +140,7 @@ chat_chain = ChatChain(config_path=config_path,
                        task_prompt=args.task,
                        project_name=args.name,
                        org_name=args.org,
-                       model_type=args2type[args.model],
+                       model_type=model_type_selected,
                        code_path=args.path)
 
 # ----------------------------------------

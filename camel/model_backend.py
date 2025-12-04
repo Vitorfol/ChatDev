@@ -65,7 +65,14 @@ class OpenAIModel(ModelBackend):
 
     def run(self, *args, **kwargs):
         string = "\n".join([message["content"] for message in kwargs["messages"]])
-        encoding = tiktoken.encoding_for_model(self.model_type.value)
+        
+        # Try to get encoding for the model, fallback to cl100k_base for unknown models
+        try:
+            encoding = tiktoken.encoding_for_model(self.model_type.value)
+        except KeyError:
+            # For new/unknown models (like GPT-5), use the latest encoding
+            encoding = tiktoken.get_encoding("cl100k_base")
+        
         num_prompt_tokens = len(encoding.encode(string))
         gap_between_send_receive = 15 * len(kwargs["messages"])
         num_prompt_tokens += gap_between_send_receive
@@ -90,13 +97,82 @@ class OpenAIModel(ModelBackend):
                 "gpt-4": 8192,
                 "gpt-4-0613": 8192,
                 "gpt-4-32k": 32768,
-                "gpt-4-turbo": 100000,
-                "gpt-4o": 4096, #100000
-                "gpt-4o-mini": 16384, #100000
+                "gpt-4-turbo": 128000,
+                "gpt-4o": 128000,
+                "gpt-4o-mini": 128000,
+                "gpt-5": 200000,  # Estimated; adjust when official
+                "gpt-5-mini": 128000,  # Estimated; adjust when official
+                "gpt-5-turbo": 200000,  # Estimated; adjust when official
             }
-            num_max_token = num_max_token_map[self.model_type.value]
+            # Maximum completion tokens allowed by OpenAI API for each model
+            max_completion_tokens_map = {
+                "gpt-3.5-turbo": 4096,
+                "gpt-3.5-turbo-16k": 16384,
+                "gpt-3.5-turbo-0613": 4096,
+                "gpt-3.5-turbo-16k-0613": 16384,
+                "gpt-4": 8192,
+                "gpt-4-0613": 8192,
+                "gpt-4-32k": 32768,
+                "gpt-4-turbo": 4096,
+                "gpt-4o": 16384,
+                "gpt-4o-mini": 16384,
+                "gpt-5": 32768,  # Estimated; adjust when official
+                "gpt-5-mini": 16384,  # Estimated; adjust when official
+                "gpt-5-turbo": 32768,  # Estimated; adjust when official
+            }
+            num_max_token = num_max_token_map.get(self.model_type.value, 4096)
+            max_completion_allowed = max_completion_tokens_map.get(self.model_type.value, 4096)
+            
             num_max_completion_tokens = num_max_token - num_prompt_tokens
-            self.model_config_dict['max_tokens'] = num_max_completion_tokens
+            # Apply safe clamp to avoid BadRequest from OpenAI API
+            num_max_completion_tokens = max(1, min(num_max_completion_tokens, max_completion_allowed))
+            
+            # GPT-5 and newer models use 'max_completion_tokens' instead of 'max_tokens'
+            models_using_max_completion_tokens = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",  # o1 models also use the new parameter
+            }
+            
+            # Remove unsupported parameters for certain models
+            models_not_supporting_logit_bias = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",  # o1 models don't support logit_bias
+            }
+            
+            # Models that only support default temperature (1.0)
+            models_requiring_default_temperature = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",  # o1 models only support temperature=1
+            }
+            
+            # Models that don't support certain sampling parameters
+            models_with_restricted_sampling = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",
+            }
+            
+            if self.model_type.value in models_using_max_completion_tokens:
+                self.model_config_dict['max_completion_tokens'] = num_max_completion_tokens
+                # Remove max_tokens if it exists to avoid conflicts
+                self.model_config_dict.pop('max_tokens', None)
+            else:
+                self.model_config_dict['max_tokens'] = num_max_completion_tokens
+                # Remove max_completion_tokens if it exists to avoid conflicts
+                self.model_config_dict.pop('max_completion_tokens', None)
+            
+            # Remove unsupported parameters for newer models
+            if self.model_type.value in models_not_supporting_logit_bias:
+                self.model_config_dict.pop('logit_bias', None)
+            
+            # Remove temperature for models that only support default value
+            if self.model_type.value in models_requiring_default_temperature:
+                self.model_config_dict.pop('temperature', None)
+            
+            # Remove other restricted sampling parameters
+            if self.model_type.value in models_with_restricted_sampling:
+                self.model_config_dict.pop('top_p', None)
+                self.model_config_dict.pop('presence_penalty', None)
+                self.model_config_dict.pop('frequency_penalty', None)
 
             response = client.chat.completions.create(*args, **kwargs, model=self.model_type.value,
                                                       **self.model_config_dict)
@@ -123,13 +199,82 @@ class OpenAIModel(ModelBackend):
                 "gpt-4": 8192,
                 "gpt-4-0613": 8192,
                 "gpt-4-32k": 32768,
-                "gpt-4-turbo": 100000,
-                "gpt-4o": 4096, #100000
-                "gpt-4o-mini": 16384, #100000
+                "gpt-4-turbo": 128000,
+                "gpt-4o": 128000,
+                "gpt-4o-mini": 128000,
+                "gpt-5": 200000,  # Estimated; adjust when official
+                "gpt-5-mini": 128000,  # Estimated; adjust when official
+                "gpt-5-turbo": 200000,  # Estimated; adjust when official
             }
-            num_max_token = num_max_token_map[self.model_type.value]
+            # Maximum completion tokens allowed by OpenAI API for each model
+            max_completion_tokens_map = {
+                "gpt-3.5-turbo": 4096,
+                "gpt-3.5-turbo-16k": 16384,
+                "gpt-3.5-turbo-0613": 4096,
+                "gpt-3.5-turbo-16k-0613": 16384,
+                "gpt-4": 8192,
+                "gpt-4-0613": 8192,
+                "gpt-4-32k": 32768,
+                "gpt-4-turbo": 4096,
+                "gpt-4o": 16384,
+                "gpt-4o-mini": 16384,
+                "gpt-5": 32768,  # Estimated; adjust when official
+                "gpt-5-mini": 16384,  # Estimated; adjust when official
+                "gpt-5-turbo": 32768,  # Estimated; adjust when official
+            }
+            num_max_token = num_max_token_map.get(self.model_type.value, 4096)
+            max_completion_allowed = max_completion_tokens_map.get(self.model_type.value, 4096)
+            
             num_max_completion_tokens = num_max_token - num_prompt_tokens
-            self.model_config_dict['max_tokens'] = num_max_completion_tokens
+            # Apply safe clamp to avoid BadRequest from OpenAI API
+            num_max_completion_tokens = max(1, min(num_max_completion_tokens, max_completion_allowed))
+            
+            # GPT-5 and newer models use 'max_completion_tokens' instead of 'max_tokens'
+            models_using_max_completion_tokens = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",  # o1 models also use the new parameter
+            }
+            
+            # Remove unsupported parameters for certain models
+            models_not_supporting_logit_bias = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",  # o1 models don't support logit_bias
+            }
+            
+            # Models that only support default temperature (1.0)
+            models_requiring_default_temperature = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",  # o1 models only support temperature=1
+            }
+            
+            # Models that don't support certain sampling parameters
+            models_with_restricted_sampling = {
+                "gpt-5", "gpt-5-mini", "gpt-5-turbo",
+                "o1-preview", "o1-mini",
+            }
+            
+            if self.model_type.value in models_using_max_completion_tokens:
+                self.model_config_dict['max_completion_tokens'] = num_max_completion_tokens
+                # Remove max_tokens if it exists to avoid conflicts
+                self.model_config_dict.pop('max_tokens', None)
+            else:
+                self.model_config_dict['max_tokens'] = num_max_completion_tokens
+                # Remove max_completion_tokens if it exists to avoid conflicts
+                self.model_config_dict.pop('max_completion_tokens', None)
+            
+            # Remove unsupported parameters for newer models
+            if self.model_type.value in models_not_supporting_logit_bias:
+                self.model_config_dict.pop('logit_bias', None)
+            
+            # Remove temperature for models that only support default value
+            if self.model_type.value in models_requiring_default_temperature:
+                self.model_config_dict.pop('temperature', None)
+            
+            # Remove other restricted sampling parameters
+            if self.model_type.value in models_with_restricted_sampling:
+                self.model_config_dict.pop('top_p', None)
+                self.model_config_dict.pop('presence_penalty', None)
+                self.model_config_dict.pop('frequency_penalty', None)
 
             response = openai.ChatCompletion.create(*args, **kwargs, model=self.model_type.value,
                                                     **self.model_config_dict)
@@ -188,6 +333,9 @@ class ModelFactory:
             ModelType.GPT_4_TURBO_V,
             ModelType.GPT_4O,
             ModelType.GPT_4O_MINI,
+            ModelType.GPT_5,
+            ModelType.GPT_5_MINI,
+            ModelType.GPT_5_TURBO,
             None
         }:
             model_class = OpenAIModel
